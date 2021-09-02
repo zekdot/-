@@ -1,0 +1,320 @@
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="./笔记.svg">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/starter-template/">
+
+    <title>笔记列表</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/starter-template/starter-template.css" rel="stylesheet"> -->
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <link href="css/zekdot.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+      .item{
+        /*height:50px;*/
+        margin: 10px 0 10px 0;
+        font-size: 30px;
+        cursor:pointer;
+        border: 1px dotted;
+        padding-top:3px;
+      }
+      .icon{
+        height:30px;
+        width: 30px;
+        margin: 0px 10px 0px 10px;
+      }
+      
+      .midFont{
+        font-size: 30px;
+      }
+      .smallFont{
+        font-size: 20px;
+      }
+      .deleteButton {
+        float: right;
+        /*position: absolute;*/
+        margin-right: 10px;
+        margin-top: -40px;
+        font-size: 20px;
+        /*width: */
+      }
+      .loginConfirm {
+        /*background-color: black;*/
+        /*border-color: black;*/
+        /*border-bottom: 1px #00FF00;*/
+        /*width: 20px;*/
+        font-size: 20px;
+      }
+      input{
+        background-color: black;
+        border-color: black;
+        border-bottom-color: #00FF00;
+      }
+      input:focus{
+        background-color: black;
+        border-color: black;
+        border-bottom-color: #00FF00;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="col-md-1" style="font-size: 30px;">
+      >_:
+    </div>
+    <div id="listDiv" class="col-md-10 content">
+        <!-- 登录div -->
+        <div style="margin-bottom: 10px;">Welcome {{username==null?"Guest,want to login(y/n)?":username}}
+          <button @click="showLogin=true" class="loginConfirm" v-if="!username">y</button>
+          <div v-show="showLogin">
+            <div style="margin-bottom: 10px;">Note Management login:<input type="text" v-model="userInput" ></div>
+            <div style="margin-bottom: 10px;">password:<input type="password" v-model="passInput"></div>
+            <button class="loginConfirm" @click="login">confirm</button>
+            <button class="loginConfirm" @click="showLogin=false">cancel</button>
+          </div>
+        </div>
+        <!-- 正式内容 -->
+        <button @click="enterTop">返回顶层</button>
+        <button @click="enterLast">返回上一层</button>
+        <button v-show="username" @click="showNew=true">在当前位置新建节点</button>
+        <div id="newDiv" v-show="showNew" style="font-size: 20px">
+          <label>名称:<input type="text" v-model="nodeNameInput"/></label> 
+          <label>是否为目录:
+            <select v-model="isDirInput">
+              <option value="true">Y</option>
+              <option value="false">N</option>
+            </select>
+          </label>
+          <button style="font-size: 20px" @click="submitNewNode">确认</button>
+          <button style="font-size: 20px" @click="showNew=false">取消</button>
+        </div>
+        <div class="smallFont">当前位置：{{levels.length==1?'/':levels.join("/")}}</div>
+        <div class="item" v-for="(node, index) in nodes" :key="node.name">
+          <!-- <div class="col-md-1">
+            <img class="icon" src="icon/文件夹.svg" v-if="node.dir">
+            <img class="icon" src="icon/文件.svg" v-if="!node.dir">
+
+          </div>
+          <div class="col-md-11">{{node.name}}</div> -->
+          <div style="width: 90%;" @click="enterItem(node.address, node.dir)">
+            <img class="icon" src="icon/文件夹.svg" v-if="node.dir">
+            <img class="icon" src="icon/文件.svg" v-if="!node.dir">
+            {{node.name}}
+          </div>
+          <div style="text-align: right">
+            <!-- <button disabled="true" v-show="!username" style="color:black">看不见我</button> -->
+            <button v-show="username" class="deleteButton" @click="delNode(index)">删除</button>
+          </div>
+        </div>
+
+            
+    </div>
+    <div class="col-md-1"></div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="js/cookiesUtils.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script type="text/javascript">
+      function itemComp(itema, itemb) {
+          if(itema.dir && !itemb.dir){
+            return -1;
+          }
+          if(itemb.dir && !itema.dir){
+            return 1;
+          }
+          return itema.name.localeCompare(itemb.name);
+      }
+      var vm = new Vue({
+          el : "#listDiv",
+          data : {
+              levels : [],
+              nodes : [{"address":"/nginx/负载均衡实现.md","dir":false,"name":"负载均衡实现.md"},{"address":"/nginx/url.txt","dir":false,"name":"url.txt"},{"address":"/nginx/note.md","dir":false,"name":"note.md"},{"address":"/nginx/test","dir":true,"name":"test"}],
+              // 登录相关的变量
+              username : null,
+              userInput : null,
+              passInput : null,
+              showLogin : false,
+              // 新建节点相关的变量
+              showNew : false,
+              isDirInput : false,
+              nodeNameInput : ""
+          },
+          created : function(option){
+              var that = this;
+              that.levels = JSON.parse(getCookie('levels'))
+                  // console.log(that.levels)
+              if(!that.levels){
+                  that.levels = ['']
+              }
+              // console.log('create')
+              $.get("api/node/getNodes", {"address" : this.levels.join('/')}, function(str) {
+                  var res = JSON.parse(str);
+                  if(res.code != 0){
+                      alert(res.message);
+                      return;
+                  }
+                  
+                  that.nodes = res.object;
+                  that.nodes.sort(itemComp)
+              });
+
+              // 对登录情况的检查
+              username = getCookie('username');
+              if(username){
+                $.get("api/user/isLogin", {}, function(str) {
+                    var res = JSON.parse(str);
+                    if(res.code != 0){
+                        alert(res.message);
+                        return;
+                    }
+                    if(res.object == true){
+                      that.username = username;
+                    }
+                    
+                    // that.nodes.sort(itemComp)
+                });
+              }
+          },
+          methods : {
+              // ------登录相关方法----------
+              login : function() {
+                var that = this;
+                var data = {'username':this.userInput, 'password':this.passInput};
+                $.post("api/user/login", data, function(str) {
+                    var res = JSON.parse(str);
+                    if(res.code != 0){
+                        alert(res.message);
+                        return;
+                    }
+                    setCookie('username', that.userInput);
+                    that.username = that.userInput;
+                    that.showLogin = false;
+                });
+              },
+
+              // ------登录方法结束----------
+
+              // ------节点操作方法开始------
+              submitNewNode : function() {
+                var that = this;
+                var data = {'address' : this.levels.join('/'), 'name':this.nodeNameInput, 'isDir' : this.isDirInput};
+                $.post("api/node/addNode", data, function(str) {
+                    var res = JSON.parse(str);
+                    if(res.code != 0){
+                        alert(res.message);
+                        return;
+                    }
+                    // setCookie('username', that.userInput);
+                    that.nodes.push({'name':that.nodeNameInput, 'dir' : that.isDirInput, 'address' : that.nodeNameInput})
+                    // console.log(that.nodes)
+                    that.nodes.sort(itemComp)
+                    that.showNew = false;
+                });
+                // console.log(data)
+              },
+              delNode : function(index) {
+                // console.log(index)
+                // console.log(this.nodes)
+                var name = this.nodes[index].name;
+                if(!confirm('您确定要删除文件' + (this.nodes[index].dir?'夹':'') + name + '吗？')){
+                  return;
+                }
+                var data = {'address': this.levels.join('/') + '/' + name};
+                var that = this;
+                $.post("api/node/delNode", data, function(str) {
+                    var res = JSON.parse(str);
+                    if(res.code != 0){
+                        alert(res.message);
+                        return;
+                    }
+                    // setCookie('username', that.userInput);
+                    that.nodes.splice(index, 1);
+                });
+              },
+              // ------节点操作方法结束------
+              enterItem : function(address, isDir) {
+                  var that = this;
+                  if(!isDir){
+                      location.href = 'detail.html?address=' + this.levels.join('/') + '/' + address;
+                  }else{
+                      this.levels.push(address.replace('/',''));
+                      $.get("api/node/getNodes", {"address" : this.levels.join('/')}, function(str) {
+                          var res = JSON.parse(str);
+                          if(res.code != 0){
+                              alert(res.message);
+                              return;
+                          }
+                          setCookie('levels', JSON.stringify(that.levels));
+                          that.nodes = res.object;
+                          that.nodes.sort(itemComp)
+                      });
+                  }
+              },
+              enterTop : function() {
+                  // console.log('top')
+                  var that = this;
+                  this.levels = ['']
+                  $.get("api/node/getNodes", {"address" : this.levels.join('/')}, function(str) {
+                      var res = JSON.parse(str);
+                      if(res.code != 0){
+                          alert(res.message);
+                          return;
+                      }
+                      setCookie('levels', JSON.stringify(that.levels));
+                      that.nodes = res.object;
+                      that.nodes.sort(itemComp)
+                  });
+              },
+              enterLast : function() {
+                  var that = this;
+                  // this.levels = ['/']
+                  if(this.levels.length <= 1)
+                      return;
+                  this.levels.splice(this.levels.length - 1, 1)
+                  $.get("api/node/getNodes", {"address" : this.levels.join('/')}, function(str) {
+                      var res = JSON.parse(str);
+                      if(res.code != 0){
+                          alert(res.message);
+                          return;
+                      }
+                      setCookie('levels', JSON.stringify(that.levels));
+                      that.nodes = res.object;
+                      that.nodes.sort(itemComp)
+                  });
+              }
+          }
+      })
+  </script>
+</html>
+

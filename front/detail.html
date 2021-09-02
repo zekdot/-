@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="./笔记.svg">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/starter-template/">
+
+    <title>笔记详情</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="highlight/css/xt256.css" rel="stylesheet"/>
+    <!-- Custom styles for this template -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/starter-template/starter-template.css" rel="stylesheet"> -->
+    
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+    <link rel="stylesheet" href="css/editormd.css" /> 
+      
+    <style type="text/css">
+      .loginConfirm {
+        /*background-color: black;*/
+        /*border-color: black;*/
+        /*border-bottom: 1px #00FF00;*/
+        /*width: 20px;*/
+        font-size: 20px;
+      }
+
+    </style>
+</head>
+<body>
+    <div class="col-md-1" style="font-size: 30px;">
+      >_:
+    </div>
+    <div class="col-md-10 content"  id="noteDiv">
+        <!-- 登录div -->
+        <div style="margin-bottom: 10px;">Welcome {{username==null?"Guest,want to login(y/n)?":username}}
+          <button @click="showLogin=true" class="loginConfirm" v-if="!username">y</button>
+          <div v-show="showLogin">
+            <div style="margin-bottom: 10px;">Note Management login:<input type="text" v-model="userInput" ></div>
+            <div style="margin-bottom: 10px;">password:<input type="password" v-model="passInput"></div>
+            <button class="loginConfirm" @click="login">confirm</button>
+            <button class="loginConfirm" @click="showLogin=false">cancel</button>
+          </div>
+        </div>
+        <div v-show="!isEdit" >
+          <button @click="back">返回列表</button>
+          <button v-if="username" @click="isEdit=true">编辑笔记</button>
+              <!-- bind to a data property named `code` -->
+          <!-- <highlightjs autodetect :code="code" /> -->
+          <!-- or literal code works as well -->
+          <!-- <highlightjs language='javascript' code="var x = 5;" /> -->
+              <!-- bind to a data property named `code` -->
+        <!-- <highlightjs autodetect :code="code" /> -->
+          <div v-html="detail" v-if="!picSrc">
+
+              <!-- {{detail}} -->
+          </div>
+          <div v-if="picSrc" >
+              <image :src="picSrc"/>
+          </div>
+        </div>
+        <div v-show="isEdit">
+          <button @click="submitEdit">完成编辑</button>
+          <button @click="isEdit=false">取消编辑</button>
+        </div>
+        <div v-show="isEdit" id="test-editormd"></div>
+        <!-- </div> -->
+            
+    </div>
+    <div class="col-md-1"></div>
+</body>
+
+<link href="css/zekdot.css" rel="stylesheet">
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/js/bootstrap.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie10-viewport-bug-workaround.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="./js/urlUtils.js"></script>
+<script src="js/highlight.min.js"></script>
+    <!-- <script src="js/highlightjs-vue.min.js"></script> -->
+<script src="./js/jquery.min.js"></script>
+<script src="js/editormd.js"></script> 
+<script src="js/cookiesUtils.js"></script>
+<script src="./js/marked.js"></script>
+<script type="text/javascript">
+    // hljs.initHighlightingOnLoad();
+    // $(document).ready(function() {
+    //   $('pre code').each(function(i, block) {
+    //     hljs.highlightBlock(block);
+    //   });
+    // });
+    var testEditor;
+    var vm = new Vue({
+        el : "#noteDiv",
+        data : {
+            detail : "",
+            picSrc : null,
+            address : "",
+            // 登录相关的变量
+            username : null,
+            userInput : null,
+            passInput : null,
+            showLogin : false,
+            // 编辑相关的变量
+            isEdit : false
+        },
+        created : function(option){
+ 
+            var address = getUrlKey('address',window.location.href)
+            var that = this;
+            if(!address){
+                detail = '找不到文章！';
+                return;
+            }
+            this.address = address;
+            if(address.indexOf(".jpg") >= 0 || address.indexOf(".png") >= 0 || address.indexOf(".jpeg") >= 0 ){
+                    this.picSrc = "note" + address;
+
+                    return;
+            }
+            // console.log('create')
+            $.get("note" + address, {}, function(str) {
+                // that.detail = marked(str);
+                // if(address.indexOf(".md") >= 0){
+                    var rendererMD = new marked.Renderer();
+                    rendererMD.image = function(href, title, text) {
+                        return '<image src="note/' + address.substr(0, address.lastIndexOf('/')) + '/' + href.replace("./", "") + '">'      
+                    }
+                    marked.setOptions({
+                      renderer: rendererMD,
+                      gfm: true,
+                      tables: true,
+                      breaks: false,
+                      pedantic: false,
+                      sanitize: false,
+                      smartLists: true,
+                      smartypants: false
+                    });
+                    // var markdownString = '```js\n console.log("hello"); \n```';
+                    marked.setOptions({
+                        highlight: function (code) {
+                        return hljs.highlightAuto(code).value;
+                      }
+                    });
+                    that.detail = marked(str);
+                                        
+                    testEditor = editormd("test-editormd", {
+                      // readOnly : that.isEdit,
+                      width: "100%",
+                      height: 1080,
+                      path : '../lib/',
+                      theme : "dark",
+                      previewTheme : "dark",
+                      editorTheme : "pastel-on-dark",
+                      markdown : str,
+                      codeFold : true,
+                      //syncScrolling : false,
+                      saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+                      searchReplace : true,
+                      //watch : false,                // 关闭实时预览
+                      htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
+                      //toolbar  : false,             //关闭工具栏
+                      //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+                      emoji : true,
+                      taskList : true,
+                      tocm            : true,         // Using [TOCM]
+                      tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+                      flowChart : true,             // 开启流程图支持，默认关闭
+                      sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+                      //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+                      //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+                      //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+                      //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+                      //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+                      imageUpload : true,
+                      imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                      onload : function() {
+                        console.log('onload', this);
+                                      //this.fullscreen();
+                                      //this.unwatch();
+                                      //this.watch().fullscreen();
+
+                                      //this.setMarkdown("#PHP");
+                                      //this.width("100%");
+                                      //this.height(480);
+                                      //this.resize("100%", 640);
+                          // that.detail = testEditor.getHTML();
+                          // that.detail = $(that.detail);
+                          // temp = $(that.detail);
+                          // .ready(function() {
+                          //   $('pre code').each(function(i, block) {
+                          //     hljs.highlightBlock(block);
+                          //   });
+                          // });
+                        }
+                    });
+                // }
+                // else{
+                //     String.prototype.replaceAll = function (FindText, RepText) {
+                //           return this.replace(new RegExp(FindText, "g"), RepText);
+                //         }
+                //     that.detail = str.replaceAll('\n', '<br>');
+                // //
+                // }
+                
+                
+            });
+            // 对登录情况的检查
+            username = getCookie('username');
+            if(username){
+                $.get("api/user/isLogin", {}, function(str) {
+                    var res = JSON.parse(str);
+                    if(res.code != 0){
+                        alert(res.message);
+                        return;
+                    }
+                    if(res.object == true){
+                        that.username = username;
+                    }
+                        
+                        // that.nodes.sort(itemComp)
+                });
+            }
+        },
+        methods : {
+            // ------编辑笔记相关方法-------
+            submitEdit : function() {
+              var that = this;
+              var data = {'address' : this.address, 'newContent' : testEditor.getMarkdown()}
+              // console.log(data);
+              $.post("api/note/updateContent", data, function(str) {
+                  var res = JSON.parse(str);
+                  if(res.code != 0){
+                      alert(res.message);
+                      return;
+                  }
+                  marked.setOptions({
+                        highlight: function (code) {
+                        return hljs.highlightAuto(code).value;
+                      }
+                    });
+                  that.detail = marked(testEditor.getMarkdown());
+                  // that.detail = testEditor.getMarkdown();
+                  that.isEdit = false;
+              });
+            },
+            // ------编辑笔记相关方法结束----
+
+            // ------登录相关方法----------
+            login : function() {
+              var that = this;
+              var data = {'username':this.userInput, 'password':this.passInput};
+              $.post("api/user/login", data, function(str) {
+                  var res = JSON.parse(str);
+                  if(res.code != 0){
+                      alert(res.message);
+                      return;
+                  }
+                  setCookie('username', that.userInput);
+                  that.username = that.userInput;
+                  that.showLogin = false;
+              });
+            },
+
+              // ------登录方法结束----------
+            back : function(){
+                location.href = "list.html"
+            }
+        }
+    })
+    // vm.use(hljsVuePlugin)
+</script>
+</html>

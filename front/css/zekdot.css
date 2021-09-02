@@ -1,0 +1,39 @@
+body{
+    background-color: black;
+    color: #00FF00;
+    font-size: 20px;
+}
+.content{
+    padding-top: 50px;
+}
+pre{
+    background-color: black;
+    color: white;
+}
+table td{
+    border: 1px dotted;
+}
+td {
+    padding: 5px 10px 5px 10px;
+}
+th {
+    border: 1px dotted;
+    text-align: center;
+    padding: 5px 10px 5px 10px;
+}
+button{
+    background-color: black;
+    font-size: 30px;
+    border: 1px dotted;
+    margin-bottom: 10px;
+}
+input{
+    background-color: black;
+    border-color: black;
+    border-bottom-color: #00FF00;
+}
+select{
+    background-color: black;
+    border-color: black;
+    /*border-bottom-color: #00FF00;*/
+}
