@@ -1,5 +1,5 @@
 // 引入封装的request
-import request from '@/utils/request'
+import { request, noteRequest } from '@/utils/request'
 
 // 根据地址获取文章列表
 export function getNoteList(address) {
@@ -12,8 +12,8 @@ export function getNoteList(address) {
 
 // 根据address请求文章详情
 export function getNoteDetail(address) {
-  return request({
-    url: 'node/' + address,
+  return noteRequest({
+    url: address,
     method: 'get'
   })
 }

@@ -4,6 +4,7 @@ const constantRouterMap = [
     {
         path: '',
         redirect: '/note/list'
+        // redirect: '/note/detail/test.txt'
     },
     {
         path: '/note',
@@ -16,13 +17,16 @@ const constantRouterMap = [
                 path: 'list',
                 name: 'list',
                 component: () => import('@/views/note/list.vue')
-            }
+            },
+            {
+                path: 'detail/:address',
+                name: 'detail',
+                component: () => import('@/views/note/detail.vue'),
+                props: true
+            },
         ]
     },
-    {
-        path: '/detail/:id',
-        component: () => import('@/views/detail.vue')
-    },
+
     // 404信息页面展示
     { 
         path: '/:pathMatch(.*)*', 

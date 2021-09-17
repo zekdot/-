@@ -21,5 +21,18 @@ request.interceptors.response.use(response => {
     alert(error.message);
     return Promise.reject(error);
 });
-export default request;
+const noteRequest = axios.create({
+    baseURL: 'http://localhost:9003/noteraw',
+    timeout: 5000
+});
+noteRequest.interceptors.response.use(response => {
+    // 请求发送后的处理方式，如果code不为0,直接返回错误
+    const res = response.data;
+    return res;
+}, error => {
+    // 请求发送前就失败了的时候的处理方式
+    alert(error.message);
+    return Promise.reject(error);
+});
+export { request, noteRequest };
 //# sourceMappingURL=request.js.map
