@@ -1,15 +1,24 @@
 import {createRouter, createWebHistory} from "vue-router";
+import Layout from '@/views/layout/layout.vue'
 const constantRouterMap = [
     {
         path: '',
-        component: () => import('@/views/note/list.vue')
+        redirect: '/note/list'
     },
     {
-        path: '/list',
-        name: 'list',
-        component: () => import('@/views/note/list.vue')
+        path: '/note',
+        component: Layout,
+        // redirect: '',
+        name: 'note',
+        meta: { title: '文章列表' },
+        children: [
+            {
+                path: 'list',
+                name: 'list',
+                component: () => import('@/views/note/list.vue')
+            }
+        ]
     },
-    // 这里在访问/detail/13的时候就会访问detail.vue，并且传入参数13
     {
         path: '/detail/:id',
         component: () => import('@/views/detail.vue')
