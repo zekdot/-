@@ -26,6 +26,7 @@ button{
     font-size: 30px;
     border: 1px dotted;
     margin-bottom: 10px;
+    margin-right:10px;
 }
 input{
     background-color: black;
@@ -36,4 +37,7 @@ select{
     background-color: black;
     border-color: black;
     /*border-bottom-color: #00FF00;*/
+}
+.smallFont {
+    font-size: 20px;
 }

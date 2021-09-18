@@ -23,6 +23,7 @@ request.interceptors.response.use(response => {
 });
 const noteRequest = axios.create({
     baseURL: 'http://localhost:9003/noteraw',
+    // headers: { 'content-type': 'application/x-www-form-urlencoded' },
     timeout: 5000
 });
 noteRequest.interceptors.response.use(response => {

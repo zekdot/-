@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import Cookies from 'js-cookie';
 import { note } from './modules/note';
+import { user } from './modules/user';
 import persistedState from 'vuex-persistedstate'
 
 const store = {
@@ -8,7 +9,8 @@ const store = {
         version: '1.0.0'
     },
     modules: {
-        note
+        note,
+        user
     },
     plugins: [
       persistedState({
