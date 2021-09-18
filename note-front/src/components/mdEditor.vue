@@ -26,7 +26,7 @@
             // width: '',
             content:{
                 type: String,
-                default: ''
+                default: '  '
             },
             type: {
                 type:String,
@@ -69,30 +69,7 @@
                         imageUpload : true,
                         imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                         onload : function() {
-                            // console.log('onload', this);
-                            //this.fullscreen();
-                            // console.log(this.markdown)
-                            //this.unwatch();
-                            // this.markdownTextarea[0].defaultValue = "fuckyou";
-                            // console.log(this)
-                            //this.watch().fullscreen();
-
-                            //this.setMarkdown("#PHP");
-                            //this.width("100%");
-                            //this.height(480);
-                            //this.resize("100%", 640);
-                            // that.detail = testEditor.getHTML();
-                            // that.detail = $(that.detail);
-                            // temp = $(that.detail);
-                            // .ready(function() {
-                            //   $('pre code').each(function(i, block) {
-                            //     hljs.highlightBlock(block);
-                            //   });
-                            // });
                         }
-                        // onchange : ()=>{
-                        //     this.$emit('change',this.instance.getPreviewedHTML(),this.instance.getMarkdown())
-                        // }
                     };
                 },
             },
@@ -100,42 +77,51 @@
         data() {
             return {
                 instance: null,
-                contentLocal: this.content
+                contentLocal: null
             };
         },
-        mounted() {
-            // let that = this;
-            //加载依赖
-            $s([
-                // `/lib/jquery.min.js`,
-                // `/lib/editor.md/lib/codemirror/codemirror.min.js`,
-                `/lib/editor.md/lib/marked.min.js`,
-                `/lib/editor.md/lib/prettify.min.js`,
-                `/lib/editor.md/lib/raphael.min.js`,
-                `/lib/editor.md/lib/underscore.min.js`,
-            ], () => {
-                $s(`/lib/editor.md/editormd.min.js`, () => {
-                    this.$nextTick((editorMD = window.editormd) => {
-                        if (editorMD) {
-                            // console.log(that.content);
-                            // that.contentLocal = that.content;
-                            //type等于editor是编辑，否则展示数据
-                            if (this.type == 'editor'){
-                                let config = this.editorConfig;
-                                config['markdown'] = this.content;
-                                console.log(this.id);
-                                console.log(this.contentLocal);
-                                this.instance = editorMD(this.id, config);
-                                // console.log(this.instance);
-                                // this.instance.setMarkdown('???')
-                            } else {
-                                this.instance = editorMD.markdownToHTML(this.id, this.editorConfig)
+        methods: {
+            init: function(content) {
+                let that = this;
+                this.contentLocal = content;
+                //加载依赖
+                $s([
+                    // `/lib/jquery.min.js`,
+                    // `/lib/editor.md/lib/codemirror/codemirror.min.js`,
+                    `/lib/editor.md/lib/marked.min.js`,
+                    `/lib/editor.md/lib/prettify.min.js`,
+                    `/lib/editor.md/lib/raphael.min.js`,
+                    `/lib/editor.md/lib/underscore.min.js`,
+                ], () => {
+                    $s(`/lib/editor.md/editormd.min.js`, () => {
+                        this.$nextTick((editorMD = window.editormd) => {
+                            if (editorMD) {
+                                // console.log(that.content);
+                                // that.contentLocal = that.content;
+                                //type等于editor是编辑，否则展示数据
+                                if (this.type == 'editor'){
+                                    let config = this.editorConfig;
+                                    // console.log(this.id);
+                                    // console.log(this.currentLocal);
+                                    config['onchange'] = function() {
+                                        that.$emit('change',that.instance.getPreviewedHTML(),that.instance.getMarkdown())
+                                    };
+                                    // this.instance = editorMD(this.id, config);
+                                    this.instance = editorMD(this.id, config);
+                                    // this.$forceUpdate()
+                                    // console.log(this.instance);
+                                    // this.instance.setMarkdown('???')
+                                } else {
+                                    let config = this.editorConfig;
+                                    // config['markdown'] = this.content;
+
+                                    this.instance = editorMD.markdownToHTML(this.id, config);
+                                }
                             }
-                        }
+                        });
                     });
                 });
-            });
-
+            }
         }
     };
 </script>

@@ -1,5 +1,9 @@
 https://www.cnblogs.com/naaoveGIS/p/5478208.html
+
 https://www.cnblogs.com/wcwnina/p/8728391.html
+
 http://www.runoob.com/linux/nginx-install-setup.html
+
 http://www.nginx.cn/doc/
+
 https://blog.csdn.net/qq_35843543/article/details/81561240 403 或者404

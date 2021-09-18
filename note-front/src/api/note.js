@@ -17,3 +17,11 @@ export function getNoteDetail(address) {
     method: 'get'
   })
 }
+
+export function updateContent(data) {
+  return request({
+    url: 'note/updateContent',
+    method: 'post',
+    data: data
+  })
+}
