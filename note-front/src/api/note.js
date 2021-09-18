@@ -1,5 +1,6 @@
 // 引入封装的request
 import { request, noteRequest } from '@/utils/request'
+import qs from 'qs'
 
 // 根据地址获取文章列表
 export function getNoteList(address) {
@@ -22,6 +23,6 @@ export function updateContent(data) {
   return request({
     url: 'note/updateContent',
     method: 'post',
-    data: data
+    data: qs.stringify(data)
   })
 }
