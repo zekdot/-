@@ -24,6 +24,13 @@ const constantRouterMap = [
                 component: () => import('@/views/note/detail.vue'),
                 props: true
             },
+            {
+                path: 'editNote/:address',
+                name: 'editNote',
+                component: () => import('@/views/note/editNote.vue'),
+                meta: { requireLogin: true },
+                props: true
+            }
         ]
     },
 
@@ -33,9 +40,11 @@ const constantRouterMap = [
         name: 'NotFound', 
         component: () => import('@/views/notFound.vue')
     }
-]
-export default new createRouter({
+];
+let router = createRouter({
     history: createWebHistory(),
     routes: constantRouterMap
 });
+
+export default router;
 //# sourceMappingURL=router.js.map
