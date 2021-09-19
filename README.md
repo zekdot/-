@@ -12,7 +12,8 @@
 ## 1.项目结构
 
 * note-management: springboot实现的服务端
-* front:前端文件存放目录
+* ~~front:前端文件存放目录~~
+* note-front:使用vue-cli重写的前端文件存放目录，作为以后前端部分的主要维护项目
 * example-note:样例笔记根目录
 * conf:nginx、cron等的配置文件
 
