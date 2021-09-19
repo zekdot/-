@@ -45,8 +45,7 @@ server {
         location / {
         		# 以下是前端文件夹所在的地址
                 root 	/home/xxx/front;
-                index index.html index.htm index.nginx-debian.html;
-                try_files $uri $uri/ =404;
+        		try_files $uri $uri/ /index.html;
         }
 
         location /note/ {
